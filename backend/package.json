@@ -1,0 +1,26 @@
+{
+  "name": "simple-weather-api",
+  "version": "0.0.1",
+  "description": "Offers access to OpenWeahter API",
+  "main": "./server/bin.js",
+  "scripts": {
+    "start": "node ./server/bin.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/antonic901/simple-weather-app.git"
+  },
+  "author": "antonic901",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/antonic901/simple-weather-app/issues"
+  },
+  "homepage": "https://github.com/antonic901/simple-weather-app#readme",
+  "dependencies": {
+    "axios": "^0.26.1",
+    "body-parser": "^1.20.0",
+    "express": "^4.17.3",
+    "morgan": "^1.10.0"
+  }
+}
