@@ -1,59 +1,75 @@
 <template>
-    <div class="d-flex justify-center align-center" style="height:100%;">
-        <v-card
-            class="d-flex flex-row align-center rounded-lg"
-            max-width="600"
-        >
-        <v-img class="ml-4"  width="36" height="36" src="../assets/icons/weather.jpg"></v-img>
-        <v-container fluid>
-            <v-row no-gutters align="center">
-                <v-col cols="12"  lg="3">
-                    <v-select
-                        class="my-1 mr-lg-2 centered-input"
-                        outlined
-                        hide-details
-                        dense
-                        prepend-inner-icon="mdi-vhs"
-                        :items="countries"
-                    >
-                    </v-select>
-                </v-col>
-                <v-col cols="12" lg="9">
-                    <v-text-field
-                        class="my-1"
-                        label="Please enter your location..."
-                        placeholder="Enter name of city"
-                        append-icon="mdi-magnify"
-                        hide-details
-                        outlined
-                        dense
-                    ></v-text-field>
-                </v-col>
-            </v-row>
-        </v-container>
-        </v-card>
-    </div>
+    <v-container class="d-flex flex-column justify-center align-center" v-bind:style="background" fluid>
+        <SearchBar></SearchBar>
+        <HomeInfo></HomeInfo>
+    </v-container>
 </template>
 
 <script>
+import SearchBar from '../components/SearchBar/SearchBar.vue';
+import HomeInfo from '../components/Weather/HomeInfo/HomeInfo.vue';
+
+import colorBetween from 'color-between';
+import { useWeather } from '../store/weather';
+
 export default {
     name: 'HomePage',
+    components: { SearchBar, HomeInfo },
+    setup() {
+        const store = useWeather();
+        return {
+            weather: store
+        }
+    },
+    computed: {
+        daily() {
+            return this.weather.daily;
+        },
+        background () {
+            const minColor =  this.daily ? this.getTempColor(this.daily[0].temp.min) : '#cee5f3'; 
+            const maxColor = this.daily ? this.getTempColor(this.daily[0].temp.max): '#fff2e2';
+            var s = `linear-gradient(to bottom right, ${minColor} 50%, ${maxColor} 90%)`;
+            return {
+            'background': s,
+            'height': '100%'
+            }
+        }
+    },
     data() {
         return {
-            countries: [
-                'SRB',
-                'BG',
-                'BIH',
-                'RUS'
+            temps: [
+                {
+                    value: -40,
+                    color: '#10428f'
+                },
+                {
+                    value: -20,
+                    color: '#21a5ef'
+                },
+                {
+                    value: 0,
+                    color: '#96daff'
+                },
+                {
+                    value: 20,
+                    color: '#f3d77c'
+                },
+                {
+                    value: 40,
+                    color: '#ff9557'
+                }
             ]
         }
+    },
+    methods: {
+        getTempColor(temp) {
+            for (var i = 0; i < this.temps.length-1; i++) {
+                if (temp >= this.temps[i].value && temp <= this.temps[i+1].value) {
+                    return colorBetween(this.temps[i].color, this.temps[i+1].color, temp / 20);
+                }
+            }
+            return '#10428f';
+        }
     }
-
 }
 </script>
-
-<style scoped>
-    .centered-input input {
-        text-align: center;
-    }
-</style>

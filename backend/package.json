@@ -5,6 +5,7 @@
   "main": "./server/bin.js",
   "scripts": {
     "start": "node ./server/bin.js",
+    "production": "NODE_ENV=production node ./server/bin.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
