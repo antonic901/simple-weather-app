@@ -19,7 +19,8 @@
         item-value="country"
     >
         <template v-slot:prepend-inner>
-            <v-icon color="red">mdi-map-marker</v-icon>
+            <v-icon v-if="location" color="red">mdi-map-marker</v-icon>
+            <v-icon v-else>mdi-map-marker</v-icon>
         </template>
         <!-- <template v-slot:selection="data">
             <div> {{data.item.name}}, {{data.item.state}}, {{data.item.country}} </div>

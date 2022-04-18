@@ -1,5 +1,5 @@
 <template>
-    <v-container class="d-flex flex-column justify-center align-center" v-bind:style="background" fluid>
+    <v-container class="d-flex flex-column justify-center align-center" style="height:100%;" fluid>
         <SearchBar></SearchBar>
         <HomeInfo></HomeInfo>
     </v-container>
@@ -25,9 +25,15 @@ export default {
         daily() {
             return this.weather.daily;
         },
+        avgTempMin() {
+            return this.weather.avgTempMin;
+        },
+        avgTempMax() {
+            return this.weather.avgTempMax;
+        },
         background () {
-            const minColor =  this.daily ? this.getTempColor(this.daily[0].temp.min) : '#cee5f3'; 
-            const maxColor = this.daily ? this.getTempColor(this.daily[0].temp.max): '#fff2e2';
+            const minColor =  this.avgTempMin ? this.getTempColor(this.avgTempMin) : '#cee5f3'; 
+            const maxColor = this.avgTempMax ? this.getTempColor(this.avgTempMax): '#fff2e2';
             var s = `linear-gradient(to bottom right, ${minColor} 50%, ${maxColor} 90%)`;
             return {
             'background': s,
