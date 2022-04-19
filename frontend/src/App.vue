@@ -1,8 +1,8 @@
 <template>
   <v-app v-bind:style="background">
     <NavigationDrawer></NavigationDrawer>
-    <div style="height:50px;" app>
-        <v-btn v-on:click="global.setNavDrawer(true)" class="ml-5 mt-3"  icon>
+    <div class="d-flex justify-end" style="height:50px;" app>
+        <v-btn v-on:click="global.setNavDrawer(!global.showNavDrawer)" class="mr-5 mt-3"  icon>
             <v-icon large>mdi-menu</v-icon>
         </v-btn>
     </div>

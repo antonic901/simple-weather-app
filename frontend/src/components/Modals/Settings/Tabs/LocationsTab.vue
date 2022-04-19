@@ -1,43 +1,12 @@
 <template>
-    <v-card flat>
-        <v-card 
-            v-for="location in locations" 
-            :key="location.country" 
-            flat
-            class="mx-4 my-2 rounded-lg"
-            style="background: linear-gradient(to bottom right, #cee5f3 10%, #fff2e2 90%);"
-        >
-            <v-row no-gutters align="center">
-                <v-col cols="1" class="my-1 mx-2">
-                    <v-img 
-                        :src="location.icon"
-                        height="24"
-                        width="32"
-                    ></v-img>
-                </v-col>
-                <v-col class="grey--text font-weight-black" align="center">
-                    {{location.country}}
-                </v-col>
-                <v-col class="grey--text font-weight-black" align="center">
-                    {{location.city}}, {{location.state}}
-                </v-col>
-                <v-col cols="1" class="mx-2" align="end">
-                    <v-btn v-on:click="removeLocation(location)" fab width="24" height="24" color="error">
-                        <v-icon color="white" small>mdi-close</v-icon>
-                    </v-btn>
-                </v-col>
-            </v-row>
-        </v-card>
+    <v-card flat max-height="400" style="overflow-y: auto">
+        <LocationList v-bind:locations="locations" v-on:remove-location="(location) => removeLocation(location)"></LocationList>
         <div class="d-flex justify-center">
             <v-btn fab class="my-2" width="24" height="24" v-on:click="show = !show" color="#cee5f3">
                 <v-icon :color="show ? 'red' : 'white'">{{show ? 'mdi-close' : 'mdi-plus-thick'}}</v-icon>
             </v-btn>
         </div>
-        <v-card
-            v-if="show"
-            class="mx-4 mb-4 rounded-lg"
-            style="background: linear-gradient(to bottom right, #cee5f3 10%, #fff2e2 90%);"
-        >
+        <v-card v-if="show" class="mx-4 mb-4 rounded-lg" style="background: linear-gradient(to bottom right, #cee5f3 10%, #fff2e2 90%);">
             <v-container fluid>
                 <v-row no-gutters align="center">
                     <v-col cols="12"  lg="5">
@@ -60,45 +29,65 @@
 <script>
 import Country from '../../../SearchBar/Items/Country.vue';
 import Location from '../../../SearchBar/Items/Location.vue';
+import LocationList from './LocationsItems/LocationList.vue';
 
 import _ from 'lodash'
+import { useLocations } from '../../../../store/locations';
 
 export default {
     name: 'LocationsTab',
-    components: { Country, Location},
+    components: { Country, Location, LocationList},
+    setup() {
+        const store = useLocations();
+        return {locStore: store}
+    },
     data() {
         return {
             country: null,
             location: null,
             show: false,
-            locations: [
-                {
-                    icon: 'https://flagcdn.com/rs.svg',
-                    country: 'Serbia',
-                    city: 'Novi Sad',
-                    state: 'Vojvodina',
-                    lat: 45,
-                    lon: 38
-                },
-                {
-                    icon: 'https://flagcdn.com/rs.svg',
-                    country: 'Bosnia and Herzegovina',
-                    city: 'Sanski Most',
-                    state: 'Vojvodina',
-                    lat: 40,
-                    lon: 38
-                }
-            ]
+            locations: []
         }
     },
     methods: {
         addLocation() {
-            console.log('Adding location.')
+            var body = {
+                icon: this.country.flags.svg,
+                country: this.country.name.common,
+                city: this.location.name,
+                state: this.location.state,
+                lat: this.location.lat,
+                lon: this.location.lon
+            }
+            this.axios.post("/location/add", body)
+                .then(r => {
+                    this.locations = r.data;
+                    this.locStore.updateLocations(r.data);
+                })
+                .catch(e => {
+                    console.log(e);
+                })
         },
         removeLocation(location) {
-            this.locations = _.remove(this.locations, function (n) {return n.lat != location.lat || n.lon != location.lon })
-            console.log('Removing location.')
+            this.axios.delete("/location/remove",{params: {id: location.id}})
+                .then(r => {
+                    this.locations = _.remove(this.locations, function (n) {return n.lat != location.lat || n.lon != location.lon });
+                    this.locations = r.data;
+                    this.locStore.updateLocations(r.data);
+                })
+                .catch(e => {
+                    console.log(e);
+                })
         }
+    },
+    mounted () {
+        this.axios.get('/location/all')
+            .then(r => {
+                this.locations = r.data;
+            })
+            .catch(e => {
+                console.log(e)
+            })
     }
 }
 </script>

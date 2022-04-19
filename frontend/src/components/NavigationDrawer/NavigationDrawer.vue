@@ -22,7 +22,7 @@
                 </v-btn>
             </v-list-item>
             <v-list>
-                <WeatherWidget></WeatherWidget>
+                <WeatherWidget v-for="(location, index) in locations" :key="location.id" v-bind:location="location" v-bind:weather="weathers[index]"></WeatherWidget>
             </v-list>
         </v-navigation-drawer>
         <SettingsModal v-bind:value="showSettings" v-on:close-settings="(value) => {showSettings = value, show = navDrawerStatus}"></SettingsModal>
@@ -34,13 +34,15 @@ import WeatherWidget from './Widgets/WeatherWidget.vue';
 import SettingsModal from '../Modals/Settings/SettingsModal.vue';
 
 import { useGlobal } from '../../store/global';
+import { useLocations } from '../../store/locations';
 
 export default {
     name: 'NavigationDrawer',
     components: { WeatherWidget, SettingsModal },
     setup() {
         const global = useGlobal();
-        return {global: global}
+        const locations = useLocations();
+        return {global: global, locStore: locations }
     },
     computed: {
         width () {
@@ -56,17 +58,41 @@ export default {
             set (value) {
                 this.global.setNavDrawer(value);
             }
+        },
+        locations () {
+            return this.locStore.locations;
+        },
+        weathers () {
+            return this.locStore.weathers;
         }
-    },
+    }, 
     data() {
         return {
             showSettings: false,
             navDrawerStatus: false
         }
+    },
+    watch: {
+        locations () {
+            this.locStore.locations.forEach(element => {
+                this.axios.get("/weather", {params: {lat: element.lat, lon: element.lon}})
+                    .then(r => {
+                        this.locStore.addWeather(r.data);
+                    })
+                    .catch(e => {
+                        console.log(e);
+                    })
+            });
+        }
+    },
+    mounted () {
+        this.axios.get('/location/all')
+            .then(r => {
+                this.locStore.updateLocations(r.data);
+            })
+            .catch(e => {
+                console.log(e);
+            })
     }
 }
 </script>
-
-<style>
-
-</style>

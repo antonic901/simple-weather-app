@@ -1,5 +1,5 @@
 <template>
-    <v-card class="d-flex flex-row align-center rounded-lg" style="background: linear-gradient(to bottom right, #cee5f3 10%, #fff2e2 90%);" max-width="600">
+    <v-card class="d-flex flex-row align-center rounded-lg" max-width="600">
         <v-img class="ml-4"  width="36" height="36" src="../../assets/icons/weather.jpg"></v-img>
         <v-container fluid>
             <v-row no-gutters align="center">

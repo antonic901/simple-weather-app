@@ -3,7 +3,8 @@
 var express = require('express'),
     bodyParser = require('body-parser'),
     morgan = require('morgan'),
-    axios = require('axios');
+    axios = require('axios'),
+    service = require('./service');
     
 var api = express();
 
@@ -33,7 +34,11 @@ api.get('/search/location', function (req, res) {
 
     axios.get("http://api.openweathermap.org/geo/1.0/direct", {params: {q: query, limit: 10, appid: '375986c161d754e8e0b204fbd4d79440'}})
         .then(r => {
-            res.send(r.data);
+            if (r.data == []) {
+                res.sendStatus(404);
+            } else {
+                res.send(r.data);
+            }
         })
         .catch(e => {
             res.statusCode(e.response.status);
@@ -57,7 +62,7 @@ api.get('/weather', function (req, res) {
         .catch(e => {
             res.sendStatus(e.response.status);
         })
-})
+});
 
 api.get('/weather/current', function (req, res) {
     var params = {
@@ -74,6 +79,18 @@ api.get('/weather/current', function (req, res) {
         .catch(e => {
             res.sendStatus(e.response.status).send(e.response.data);
         })
-})
+});
+
+api.post('/location/add', function (req, res) {
+    res.send(service.addLocation(req.body));
+});
+
+api.delete('/location/remove', function (req, res) {
+    res.send(service.removeLocation(req.query.id));
+});
+
+api.get('/location/all', function (req, res) {
+    res.send(service.allLocation());
+});
 
 module.exports = api;
