@@ -61,35 +61,33 @@ export default {
         weathers () {
             return this.locStore.weathers;
         }
-    }, 
-    watch: {
-        async locations () {
-            for (var i = 0; i < this.locStore.locations.length; i++) {
-                var response = await this.axios.get("/weather", {params: {lat: this.locStore.locations[i].lat, lon: this.locStore.locations[i].lon}});
-                this.locStore.addWeather(response.data);
-            }
-        },
-        weathers () {
-            
-        }
     },
-    mounted () {
-        var isEnabledSort = true;
+    async mounted () {
+        var isEnabledSort = await this.axios.get('/settings')
+            .then(r => {
+                return r.data.general.sidebar.sorting.enabled;
+            });
+
+        console.log(isEnabledSort);
+
         if (isEnabledSort) {
             this.axios.get('/location/average-temperature/sort', {data: {locations: null, interval: null}})
                 .then(r => {
                     r.data.forEach(item => {
                         this.locStore.addLocation(item.location);
-                        // this.locStore.addWeather(item.weather);
+                        this.locStore.addWeather(item.weather);
                     })
                 })
                 .catch(e => {
                     console.log(e);
                 })
         } else {
-            this.axios.get('/location/all')
+            this.axios.get('/location/weather/all')
                 .then(r => {
-                    this.locStore.updateLocations(r.data);
+                    r.data.forEach(item => {
+                        this.locStore.addLocation(item.location);
+                        this.locStore.addWeather(item.weather);
+                    })
                 })
                 .catch(e => {
                     console.log(e);

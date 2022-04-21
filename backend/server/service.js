@@ -3,11 +3,48 @@
 var confUtil = require('./utils/configuration'),
     _ = require('lodash'),
     openweather = require('./providers/openweather'),
-    axios = require('axios');
+    EventEmitter = require("events"),
+    tools = require('./utils/tools');
+
+const notify = new EventEmitter();
 
 var configuration = confUtil.readConfigurationFile();
 
 var userId = 1;
+
+async function sleep() {
+    var user = findUser(userId);
+    while (true) {
+        await tools.sleep(user.settings.general.updateInterval * 1000);
+        notify.emit('refresh-data', 'Settings are updated.');
+    }
+} 
+
+sleep()
+
+function test() {
+    console.log("Saljem notifikaciju...")
+    notify.emit('notification', 'Settings are updated.');
+}
+
+async function getWeathersForUser(id) {
+    var user = findUser(userId);
+
+    const locations = user.settings.locations;
+    const locPayload = [];
+
+    // fetching data from OpenWeather API by Longitude and Latitude
+    for (var i = 0; i < locations.length; i++) {
+        var response = await openweather.oneCall(locations[i].lat, locations[i].lon);
+        if (response.success) {
+            locPayload.push({location: locations[i], weather: response.body})
+        } else {
+            console.log("API OpenWeather returned error.");
+        }
+    }
+
+    return locPayload;
+}
 
 /*
 >>
@@ -116,7 +153,7 @@ function addLocation(location) {
     }
 
     confUtil.writeConfigurationFile(JSON.stringify(configuration));
-
+    notify.emit('settings-updated', user.settings.general.sidebar.sorting.enabled);
     return user.settings.locations;
 }
 
@@ -126,7 +163,7 @@ function removeLocation(id) {
     user.settings.locations = _.remove(user.settings.locations, function(loc) {return loc.id != id});
 
     confUtil.writeConfigurationFile(JSON.stringify(configuration));
-
+    notify.emit('settings-updated', user.settings.general.sidebar.sorting.enabled);
     return user.settings.locations;
 
 }
@@ -150,6 +187,7 @@ function updateSettings(settings) {
     var user = findUser(userId);
     user.settings = settings;
     confUtil.writeConfigurationFile(JSON.stringify(configuration));
+    notify.emit('settings-updated', settings.general.sidebar.sorting.enabled);
     return user.settings;
 }
 
@@ -160,5 +198,8 @@ module.exports = {
     getSettings,
     updateSettings,
     getAverageTemp,
-    sortByAverageTemp
+    sortByAverageTemp,
+    getWeathersForUser,
+    test,
+    notify
 }

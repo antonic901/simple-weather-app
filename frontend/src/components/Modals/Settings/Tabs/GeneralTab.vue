@@ -130,7 +130,7 @@ export default {
     },
     data() {
         return {
-            units: ['Minutes', 'Hours', 'Days'],
+            units: ['Hours', 'Days'],
             rules: [
                 v => {
                     if (this.settings.general.sidebar.sorting.interval[0] > v[1] ) {

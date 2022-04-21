@@ -9,9 +9,11 @@ var host = process.env.HOST || network.getHostAddress();
 var port = process.env.PORT || 9006;
 
 var http = require('http'),
+    socket = require('./socket'),
     api = require('./');
 
 var server = http.createServer(api);
+socket(server);
 
 server.listen(port, host).on('error', function (e) {
     if (e.code !== 'EADDRINUSE' && e.code !== 'EACCES') {
@@ -23,4 +25,4 @@ server.listen(port, host).on('error', function (e) {
     console.log('API is successfully started. Listening on http://' + host + ':' + port);
 });
 
-module.exports = { host, port};
+module.exports = { host, port };

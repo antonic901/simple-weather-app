@@ -24,22 +24,27 @@
 </template>
 
 <script>
+import SocketioService from './services/socketio.service.js';
+
 import NavigationDrawer from './components/NavigationDrawer/NavigationDrawer.vue';
 import SettingsModal from './components/Modals/Settings/SettingsModal.vue';
 
 import colorBetween from 'color-between';
 import { useWeather } from './store/weather';
 import { useGlobal } from './store/global';
+import { useLocations } from './store/locations';
 
 export default {
     components: { NavigationDrawer, SettingsModal },
     name: 'App',
     setup() {
         const store = useWeather();
-        const global = useGlobal(); 
+        const global = useGlobal();
+        const locStore = useLocations();
         return {
             weather: store,
-            global: global
+            global: global,
+            locStore: locStore
         }
     },
     computed: {
@@ -98,6 +103,53 @@ export default {
             }
             return '#10428f';
         }
+    },
+    created () {
+        SocketioService.setupSocketConnection();
+
+        SocketioService.socket.on('refresh-data', (data) => {
+            if (this.weather.weather) {
+                console.log('Refreshing data on home page...');
+                this.axios.get("/weather", {params: {lat:  this.weather.weather.lat, lon: this.weather.weather.lon}})
+                    .then(r => {
+                        this.weather.update(r.data);
+                    })
+                    .catch(e => {
+                        console.log(e);
+                    })
+            }
+        });
+
+        SocketioService.socket.on('settings-updated', (sortEnabled) => {
+            console.log(sortEnabled);
+            if (sortEnabled) {
+                this.axios.get('/location/average-temperature/sort', {data: {locations: null, interval: null}})
+                    .then(r => {
+                        r.data.forEach(item => {
+                            this.locStore.addLocation(item.location);
+                            this.locStore.addWeather(item.weather);
+                        })
+                    })
+                    .catch(e => {
+                        console.log(e);
+                    })
+            } else {
+                this.axios.get('/location/weather/all')
+                    .then(r => {
+                        r.data.forEach(item => {
+                            this.locStore.addLocation(item.location);
+                            this.locStore.addWeather(item.weather);
+                        })
+                    })
+                    .catch(e => {
+                        console.log(e);
+                    })
+            }
+        });
+
+    },
+    beforeUnmount () {
+        SocketioService.disconnect();
     }
 }
 </script>
