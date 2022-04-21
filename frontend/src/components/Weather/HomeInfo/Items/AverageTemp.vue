@@ -1,5 +1,5 @@
 <template>
-    <div v-if="averageTemp">
+    <div v-if="averageTemp != null">
         <div class="blue-grey--text text--darken-3 mt-9 d-flex justify-center" style="font-family: Zelda-Regular;max-width:600px;">
             <p style="font-size:1rem">
                 {{avTempDate.startMonth}} {{avTempDate.startDay}} - {{avTempDate.startMonth === avTempDate.endMonth ? '' :  avTempDate.endMonth}} {{avTempDate.endDay}} {{avTempDate.endYear}}
@@ -30,7 +30,7 @@ export default {
             return this.weather.averageTemp;
         },
         avTempDate () {
-            if(this.averageTemp) {
+            if(this.averageTemp != null) {
                 var start = new Date(this.weather.daily[1].dt * 1000)
                 var end = new Date(this.weather.daily[5].dt * 1000)
                 return {

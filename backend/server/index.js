@@ -3,7 +3,9 @@
 var express = require('express'),
     bodyParser = require('body-parser'),
     morgan = require('morgan'),
-    axios = require('axios');
+    axios = require('axios'),
+    openweather = require('./providers/openweather'),
+    service = require('./service');
     
 var api = express();
 
@@ -33,7 +35,11 @@ api.get('/search/location', function (req, res) {
 
     axios.get("http://api.openweathermap.org/geo/1.0/direct", {params: {q: query, limit: 10, appid: '375986c161d754e8e0b204fbd4d79440'}})
         .then(r => {
-            res.send(r.data);
+            if (r.data == []) {
+                res.sendStatus(404);
+            } else {
+                res.send(r.data);
+            }
         })
         .catch(e => {
             res.statusCode(e.response.status);
@@ -41,39 +47,59 @@ api.get('/search/location', function (req, res) {
         })
 });
 
-api.get('/weather', function (req, res) {
-    var params = {
-        lat: req.query.lat,
-        lon: req.query.lon,
-        appid: '375986c161d754e8e0b204fbd4d79440',
-        exclude: 'minutely,alerts',
-        units: 'metric'
-    }
+api.post('/location/add', function (req, res) {
+    res.send(service.addLocation(req.body));
+});
 
-    axios.get("https://api.openweathermap.org/data/2.5/onecall", {params: params})
+api.delete('/location/remove', function (req, res) {
+    res.send(service.removeLocation(req.query.id));
+});
+
+api.get('/location/all', function (req, res) {
+    res.send(service.allLocation());
+});
+
+api.get('/location/average-temperature', async function (req, res) {
+    var response = await service.getAverageTemp(req.body.locations, req.body.interval);
+    res.send(response);
+});
+
+api.get('/location/average-temperature/sort', async function (req, res) {
+    var response = await service.getAverageTemp(req.body.locations, req.body.interval);
+    res.send(service.sortByAverageTemp(response));
+});
+
+api.get('/location/weather', function (req, res) {
+    openweather.oneCall(req.query.lat, req.query.lon)
         .then(r => {
-            res.send(r.data);
+            res.statusCode = r.status;
+            res.send(r.body);
         })
-        .catch(e => {
-            res.sendStatus(e.response.status);
-        })
-})
+}) ;
 
-api.get('/weather/current', function (req, res) {
-    var params = {
-        lat: req.query.lat,
-        lon: req.query.lon,
-        appid: '375986c161d754e8e0b204fbd4d79440',
-        units: 'metric'
-    }
-
-    axios.get("https://api.openweathermap.org/data/2.5/weather", {params: params})
+api.get('/weather', async function (req, res) {
+    openweather.oneCall(req.query.lat, req.query.lon)
         .then(r => {
-            res.send(r.data);
+            res.statusCode = r.status;
+            res.send(r.body);
         })
-        .catch(e => {
-            res.sendStatus(e.response.status).send(e.response.data);
-        })
+});
+
+api.get('/location/weather/all', function (req, res) {
+    service.getWeathersForUser().then(response => {res.send(response)});
+}) ;
+
+api.get('/settings', function (req, res) {
+    res.send(service.getSettings());
+});
+
+api.put('/settings', function (req, res) {
+    res.send(service.updateSettings(req.body.settings));
+});
+
+api.get('/test', function (req, res) {
+    service.test();
+    res.send("ok");
 })
 
 module.exports = api;

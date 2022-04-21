@@ -22,12 +22,23 @@ export const useWeather = defineStore('weather', {
         },
         averageTemp: (state) => {
             if (state.weather) {
-                var daily = state.weather.daily;
-                var fiveDays = _.slice(daily, 1, 6);
-                var average = parseInt(_.sumBy(fiveDays, function (daily) { return daily.temp.day }) / 5);
-                return average;
+                return parseInt(_.sumBy(_.slice(state.weather.daily, 1, 6), function (daily) { return daily.temp.day }) / 5);
             } else {
-                return 0
+                return null;
+            }
+        },
+        avgTempMin: (state) => {
+            if (state.weather) {
+                return parseInt(_.sumBy(_.slice(state.weather.daily, 1, 6), function (daily) { return daily.temp.min }) / 5);    
+            } else {
+                return null;
+            }
+        },
+        avgTempMax: (state) => {
+            if (state.weather) {
+                return parseInt(_.sumBy(_.slice(state.weather.daily, 1, 6), function (daily) { return daily.temp.max }) / 5);     
+            } else {
+                return null;
             }
         }
     },
