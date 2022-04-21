@@ -2,10 +2,8 @@
 
 module.exports = function (server) {
     var io = require('socket.io')(server, {cors: {origins: ['http://localhost:8080']}});
-    // var Notify = require('./events/notify');
     var service = require('./service')
 
-    // const notify = new Notify();
     const notify = service.notify;
 
     io.sockets.on('connection', function (socket) {
@@ -23,9 +21,9 @@ module.exports = function (server) {
         io.emit('settings-updated', sortingEnabled)
     });
 
-    notify.on('refresh-data', (message) => {
+    notify.on('refresh-data', (sortingEnabled) => {
         console.log("Refresh data...");
-        io.emit('refresh-data', message)
+        io.emit('refresh-data', sortingEnabled)
     });
 
 };

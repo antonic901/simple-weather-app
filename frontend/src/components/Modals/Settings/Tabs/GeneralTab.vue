@@ -8,7 +8,7 @@
                 prepend-icon="mdi-refresh"
                 track-color="linear-gradient(to bottom right, #cee5f3 10%, #fff2e2 90%);"
                 thumb-label
-                min="1"
+                min="10"
                 max="60"
             >
             </v-slider>

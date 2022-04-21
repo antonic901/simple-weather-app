@@ -15,8 +15,8 @@ var userId = 1;
 async function sleep() {
     var user = findUser(userId);
     while (true) {
-        await tools.sleep(user.settings.general.updateInterval * 1000);
-        notify.emit('refresh-data', 'Settings are updated.');
+        await tools.sleep(user.settings.general.updateInterval * 60 * 1000);
+        notify.emit('refresh-data', user.settings.general.sidebar.sorting.enabled);
     }
 } 
 

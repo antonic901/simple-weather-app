@@ -10,15 +10,12 @@
             <v-icon large >mdi-cog</v-icon>
         </v-btn>
     </div>
-
     <v-main>
         <router-view></router-view>
     </v-main>
-
     <div style="height:50px;" app>
-    
-    </div>
 
+    </div>
     <SettingsModal v-bind:value="showSettings" v-on:close-settings="(value) => {showSettings = value}"></SettingsModal>
   </v-app>
 </template>
@@ -107,7 +104,7 @@ export default {
     created () {
         SocketioService.setupSocketConnection();
 
-        SocketioService.socket.on('refresh-data', (data) => {
+        SocketioService.socket.on('refresh-data', (sortEnabled) => {
             if (this.weather.weather) {
                 console.log('Refreshing data on home page...');
                 this.axios.get("/weather", {params: {lat:  this.weather.weather.lat, lon: this.weather.weather.lon}})
@@ -118,10 +115,33 @@ export default {
                         console.log(e);
                     })
             }
+            console.log(sortEnabled);
+            if (sortEnabled) {
+                this.axios.get('/location/average-temperature/sort', {data: {locations: null, interval: null}})
+                    .then(r => {
+                        r.data.forEach(item => {
+                            this.locStore.addLocation(item.location);
+                            this.locStore.addWeather(item.weather);
+                        })
+                    })
+                    .catch(e => {
+                        console.log(e);
+                    })
+            } else {
+                this.axios.get('/location/weather/all')
+                    .then(r => {
+                        r.data.forEach(item => {
+                            this.locStore.addLocation(item.location);
+                            this.locStore.addWeather(item.weather);
+                        })
+                    })
+                    .catch(e => {
+                        console.log(e);
+                    })
+            }
         });
 
         SocketioService.socket.on('settings-updated', (sortEnabled) => {
-            console.log(sortEnabled);
             if (sortEnabled) {
                 this.axios.get('/location/average-temperature/sort', {data: {locations: null, interval: null}})
                     .then(r => {
