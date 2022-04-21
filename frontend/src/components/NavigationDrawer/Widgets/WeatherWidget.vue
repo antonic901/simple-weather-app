@@ -1,5 +1,5 @@
 <template>
-    <v-card v-if="weather" class="fill-height rounded-lg mx-2 mb-4" style="background: linear-gradient(to bottom right, hsl(201.70000000000005, 82.5%, 45.5%) 50%, hsl(193.39999999999998, 99.2%, 79%) 90%);">
+    <v-card v-if="weather" class="rounded-lg mx-2 mb-4" style="background: linear-gradient(to bottom right, hsl(201.70000000000005, 82.5%, 45.5%) 50%, hsl(193.39999999999998, 99.2%, 79%) 90%);">
         <v-container class="d-flex" fluid>
             <div class="d-flex flex-column align-start">
                 <div class="blue-grey--text text--darken-3 font-weight-medium" style="font-family: Zelda-Bold;">{{location.city}}</div>

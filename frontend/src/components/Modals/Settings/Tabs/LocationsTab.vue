@@ -2,7 +2,7 @@
     <v-card flat max-height="400" style="overflow-y: auto">
         <LocationList v-bind:locations="locations" v-on:remove-location="(location) => removeLocation(location)"></LocationList>
         <div class="d-flex justify-center">
-            <v-btn fab class="my-2" width="24" height="24" v-on:click="show = !show" color="#cee5f3">
+            <v-btn fab class="mb-3" width="24" height="24" v-on:click="show = !show" color="#cee5f3">
                 <v-icon :color="show ? 'red' : 'white'">{{show ? 'mdi-close' : 'mdi-plus-thick'}}</v-icon>
             </v-btn>
         </div>

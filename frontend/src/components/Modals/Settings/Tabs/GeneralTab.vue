@@ -1,10 +1,9 @@
 <template>
     <v-card flat>
-        <!-- <v-suheader class=" mx-6 mt-5 grey--text text-h6 font-weight-dark"></v-suheader> -->
-        <v-card-text>
+        <v-card-text v-if="settings">
             <div class="ml-1 grey--text font-weight-bold">Update interval</div>
             <v-slider
-                v-model="updateInterval"
+                v-model="settings.general.updateInterval"
                 color="grey"
                 prepend-icon="mdi-refresh"
                 track-color="linear-gradient(to bottom right, #cee5f3 10%, #fff2e2 90%);"
@@ -13,21 +12,168 @@
                 max="60"
             >
             </v-slider>
+            <div class="ml-1 grey--text font-weight-bold">Sidebar</div>
+            <div class="d-flex flex-row justify-space-between">
+                <div class="ml-1 grey--text font-weight-medium">Enable sorting</div>
+                <v-switch
+                    hide-details
+                    dense
+                    v-model="settings.general.sidebar.sorting.enabled"
+                    class="ma-0 pa-0 mr-1"
+                    style="width:35px;"
+                >
+                </v-switch>
+            </div>
+            <v-divider></v-divider>
+            <v-row no-gutters align="center" class="ml-2 grey--text font-weight-medium">
+                <v-col>
+                    <span>Sorting order</span>
+                </v-col>
+                <v-col cols="7" align="end">
+                    <div>
+                        <span>{{settings.general.sidebar.sorting.sortingOrder}}</span>
+                        <v-menu
+                            offset-y
+                        >
+                            <template v-slot:activator="{ on, attrs }">
+                                <v-btn
+                                    color="grey"
+                                    dark
+                                    v-bind="attrs"
+                                    v-on="on"
+                                    icon
+                                >
+                                    <v-icon color="grey" medium>mdi-arrow-down-bold</v-icon>
+                                </v-btn>
+                            </template>
+                            <v-list>
+                                <v-list-item v-for="order in ['Ascending', 'Descending']" :key="order.id" link v-on:click="settings.general.sidebar.sorting.sortingOrder = order">
+                                    <v-icon>{{`mdi-sort-bool-${order.toLowerCase()}`}}</v-icon>
+                                    <v-list-item-title class="ml-2">{{order}}</v-list-item-title>
+                                </v-list-item>
+                            </v-list>
+                        </v-menu>
+                    </div>
+                </v-col>
+            </v-row>
+            <v-row no-gutters align="center" class="ml-2 grey--text font-weight-medium">
+                <v-col>
+                    <span>Interval units</span>
+                </v-col>
+                <v-col cols="6" align="end">
+                    <div>
+                        <span>{{settings.general.sidebar.sorting.intervalUnits}}</span>
+                        <v-menu
+                            offset-y
+                        >
+                            <template v-slot:activator="{ on, attrs }">
+                                <v-btn
+                                    color="grey"
+                                    dark
+                                    v-bind="attrs"
+                                    v-on="on"
+                                    icon
+                                >
+                                    <v-icon color="grey" medium>mdi-arrow-down-bold</v-icon>
+                                </v-btn>
+                            </template>
+                            <v-list>
+                                <v-list-item v-for="unit in units" :key="unit.id" v-on:click="settings.general.sidebar.sorting.intervalUnits = unit" link>
+                                    <v-list-item-title>{{unit}}</v-list-item-title>
+                                </v-list-item>
+                            </v-list>
+                        </v-menu>
+                    </div>
+                </v-col>
+            </v-row>
+            <div class="ml-2 mt-2">
+                <span class="grey--text font-weight-medium">Interval:</span>
+            </div>      
+            <v-range-slider
+                v-model="settings.general.sidebar.sorting.interval"
+                class="px-2"
+                color="grey"
+                prepend-icon="mdi-ray-start-arrow"
+                append-icon="mdi-ray-end-arrow"
+                track-color="linear-gradient(to bottom right, #cee5f3 10%, #fff2e2 90%);"
+                thumb-label
+                :min="interval.min"
+                :max="interval.max"
+                hide-details="auto"
+                :rules="rules"
+            >
+            </v-range-slider>
         </v-card-text>
+        <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn v-on:click="save" class="white--text" color="grey">Save</v-btn>
+            <v-spacer></v-spacer>
+        </v-card-actions>
     </v-card>
 </template>
 
 <script>
 export default {
     name: 'GeneralTab',
+    computed: {
+        interval () {
+            switch(this.settings.general.sidebar.sorting.intervalUnits) {
+                case 'Minutes':
+                    return {min: 1, max: 60}
+                case 'Hours':
+                    return {min: 1, max: 48}
+                case 'Days':
+                    return {min: 1, max: 7}
+            }
+            return {min: 0, max: 0}
+        }
+    },
     data() {
         return {
-            updateInterval: 0
+            units: ['Minutes', 'Hours', 'Days'],
+            rules: [
+                v => {
+                    if (this.settings.general.sidebar.sorting.interval[0] > v[1] ) {
+                        return 'Please update interval';
+                    }
+                    if (this.settings.general.sidebar.sorting.interval[1] > v[1]) {
+                        return 'Please update interval';
+                    }
+                    return true;
+                }
+            ],
+            settings: null
         }
+    },
+    methods: {
+        save() {
+            this.axios.put('/settings', {settings: this.settings})
+                .then(r => {
+                    alert("Updated.")
+                })
+                .catch(e => {
+                    console.log(e);
+                })
+        }
+    },
+    watch: {
+        'settings.general.sidebar.sorting.intervalUnits': function () {
+            if (this.settings.general.sidebar.sorting.interval[0] > this.interval.max) {
+                this.settings.general.sidebar.sorting.interval[0] = this.interval.max
+            }
+            if (this.settings.general.sidebar.sorting.interval[1] > this.interval.max) {
+                this.settings.general.sidebar.sorting.interval[1] = this.interval.max
+            }
+        }
+    },
+    mounted () {
+        this.axios.get('/settings')
+            .then(r => {
+                this.settings = r.data;
+            })
+            .catch(e => {
+                console.log(e);
+            })
     }
 }
 </script>
-
-<style>
-
-</style>

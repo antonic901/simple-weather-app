@@ -4,6 +4,7 @@ var express = require('express'),
     bodyParser = require('body-parser'),
     morgan = require('morgan'),
     axios = require('axios'),
+    openweather = require('./providers/openweather'),
     service = require('./service');
     
 var api = express();
@@ -46,39 +47,22 @@ api.get('/search/location', function (req, res) {
         })
 });
 
-api.get('/weather', function (req, res) {
-    var params = {
-        lat: req.query.lat,
-        lon: req.query.lon,
-        appid: '375986c161d754e8e0b204fbd4d79440',
-        exclude: 'minutely,alerts',
-        units: 'metric'
-    }
-
-    axios.get("https://api.openweathermap.org/data/2.5/onecall", {params: params})
+api.get('/weather', async function (req, res) {
+    openweather.oneCall(req.query.lat, req.query.lon)
         .then(r => {
-            res.send(r.data);
-        })
-        .catch(e => {
-            res.sendStatus(e.response.status);
+            res.statusCode = r.status;
+            res.send(r.body);
         })
 });
 
-api.get('/weather/current', function (req, res) {
-    var params = {
-        lat: req.query.lat,
-        lon: req.query.lon,
-        appid: '375986c161d754e8e0b204fbd4d79440',
-        units: 'metric'
-    }
+api.get('/location/average-temperature', async function (req, res) {
+    var response = await service.getAverageTemp(req.body.locations, req.body.interval);
+    res.send(response);
+});
 
-    axios.get("https://api.openweathermap.org/data/2.5/weather", {params: params})
-        .then(r => {
-            res.send(r.data);
-        })
-        .catch(e => {
-            res.sendStatus(e.response.status).send(e.response.data);
-        })
+api.get('/location/average-temperature/sort', async function (req, res) {
+    var response = await service.getAverageTemp(req.body.locations, req.body.interval);
+    res.send(service.sortByAverageTemp(response));
 });
 
 api.post('/location/add', function (req, res) {
@@ -91,6 +75,14 @@ api.delete('/location/remove', function (req, res) {
 
 api.get('/location/all', function (req, res) {
     res.send(service.allLocation());
+});
+
+api.get('/settings', function (req, res) {
+    res.send(service.getSettings());
+});
+
+api.put('/settings', function (req, res) {
+    res.send(service.updateSettings(req.body.settings));
 });
 
 module.exports = api;

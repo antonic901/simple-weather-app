@@ -1,9 +1,13 @@
 <template>
   <v-app v-bind:style="background">
     <NavigationDrawer></NavigationDrawer>
-    <div class="d-flex justify-end" style="height:50px;" app>
-        <v-btn v-on:click="global.setNavDrawer(!global.showNavDrawer)" class="mr-5 mt-3"  icon>
+    <div class="d-flex" style="height:50px;" app>
+        <v-btn v-on:click="global.setNavDrawer(!global.showNavDrawer)" class="ml-5 mt-3"  icon>
             <v-icon large>mdi-menu</v-icon>
+        </v-btn>
+        <v-spacer></v-spacer>
+        <v-btn v-on:click="showSettings = true" class="mr-5 mt-3" icon>
+            <v-icon large >mdi-cog</v-icon>
         </v-btn>
     </div>
 
@@ -14,18 +18,21 @@
     <div style="height:50px;" app>
     
     </div>
+
+    <SettingsModal v-bind:value="showSettings" v-on:close-settings="(value) => {showSettings = value}"></SettingsModal>
   </v-app>
 </template>
 
 <script>
 import NavigationDrawer from './components/NavigationDrawer/NavigationDrawer.vue';
+import SettingsModal from './components/Modals/Settings/SettingsModal.vue';
 
 import colorBetween from 'color-between';
 import { useWeather } from './store/weather';
 import { useGlobal } from './store/global';
 
 export default {
-    components: { NavigationDrawer },
+    components: { NavigationDrawer, SettingsModal },
     name: 'App',
     setup() {
         const store = useWeather();
@@ -57,6 +64,7 @@ export default {
     },
     data() {
         return {
+            showSettings: false,
             temps: [
                 {
                     value: -40,
