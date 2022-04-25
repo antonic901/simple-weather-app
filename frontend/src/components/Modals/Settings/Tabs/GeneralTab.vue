@@ -113,8 +113,14 @@
 </template>
 
 <script>
+import { useGlobal } from '../../../../store/global'
+
 export default {
     name: 'GeneralTab',
+    setup() {
+        const global = useGlobal();
+        return { setNotification: global.setNotification }
+    },
     computed: {
         interval () {
             switch(this.settings.general.sidebar.sorting.intervalUnits) {
@@ -147,12 +153,12 @@ export default {
     },
     methods: {
         save() {
-            this.axios.put('/settings', {settings: this.settings})
+            this.axios.put('/settings', {settings: this.settings}, {params: {id: 1}})
                 .then(r => {
-                    alert("Updated.")
+                    this.setNotification(true, 'Settings are successfully updated.')
                 })
                 .catch(e => {
-                    console.log(e);
+                    this.setNotification(true, "Settings can't be updated.")
                 })
         }
     },
@@ -167,12 +173,12 @@ export default {
         }
     },
     mounted () {
-        this.axios.get('/settings')
+        this.axios.get('/settings', {params: {id: 1}})
             .then(r => {
                 this.settings = r.data;
             })
             .catch(e => {
-                console.log(e);
+                this.setNotification(true, "Can't fetch settings.")
             })
     }
 }

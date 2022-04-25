@@ -7,7 +7,7 @@ of Server on which API is running << */
 function getHostAddress() {    
     const nets = os.networkInterfaces();
     const results = Object.create(null); // Or just '{}', an empty object
-    var host = null;
+    let host = null;
   
     for (const name of Object.keys(nets)) {
         for (const net of nets[name]) {
