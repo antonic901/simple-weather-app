@@ -1,9 +1,5 @@
 <template>
-    <v-dialog
-        v-model="dialog"
-        max-width="800px"
-        scrollable
-    >
+    <v-dialog v-model="dialog" max-width="800px" scrollable>
         <v-card class="rounded-lg">
             <v-toolbar flat dense dark style="background: linear-gradient(to bottom right, #cee5f3 10%, #fff2e2 90%);">
                 <v-spacer></v-spacer>

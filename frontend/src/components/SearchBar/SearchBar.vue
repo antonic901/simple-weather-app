@@ -17,14 +17,17 @@
 <script>
 import Country from './Items/Country.vue';
 import Location from './Items/Location.vue';
+
 import { useWeather } from '../../store/weather';
+import { useGlobal } from '../../store/global';
 
 export default {
     name: 'SearchBar',
     components: { Country, Location},
     setup() {
         const weather = useWeather();
-        return { update: weather.update }
+        const global = useGlobal();
+        return { update: weather.update, setNotification: global.setNotification }
     },
     data() {
         return {
@@ -35,12 +38,12 @@ export default {
     watch: {
         location () {
             if (this.country && this.location) {
-                this.axios.get("/weather", {params: {lat: this.location.lat, lon: this.location.lon}})
+                this.axios.get("/location/weather", {params: {lat: this.location.lat, lon: this.location.lon}})
                     .then(r => {
                         this.update(r.data);
                     })
                     .catch(e => {
-                        console.log(e);
+                        this.setNotification(true, "Can't fetch weather data.")
                     })
             }
         }

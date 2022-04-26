@@ -33,20 +33,26 @@ import LocationList from './LocationsItems/LocationList.vue';
 
 import _ from 'lodash'
 import { useLocations } from '../../../../store/locations';
+import { useGlobal } from '../../../../store/global';
 
 export default {
     name: 'LocationsTab',
-    components: { Country, Location, LocationList},
+    components: { Country, Location, LocationList },
     setup() {
         const store = useLocations();
-        return {locStore: store}
+        const global = useGlobal();
+        return {locStore: store, setNotification: global.setNotification}
+    },
+    computed: {
+        locations () {
+            return this.locStore.locations;
+        }
     },
     data() {
         return {
             country: null,
             location: null,
-            show: false,
-            locations: []
+            show: false
         }
     },
     methods: {
@@ -59,35 +65,23 @@ export default {
                 lat: this.location.lat,
                 lon: this.location.lon
             }
-            this.axios.post("/location/add", body)
+            this.axios.post("/location/add", body, {params: {id: 1}})
                 .then(r => {
-                    this.locations = r.data;
-                    this.locStore.updateLocations(r.data);
+                    this.setNotification(true, 'Location successfully added.')
                 })
                 .catch(e => {
-                    console.log(e);
+                    this.setNotification(true, "Location can't be added.")
                 })
         },
         removeLocation(location) {
-            this.axios.delete("/location/remove",{params: {id: location.id}})
+            this.axios.delete("/location/remove",{params: {id: 1, locationid: location.id}})
                 .then(r => {
-                    this.locations = _.remove(this.locations, function (n) {return n.lat != location.lat || n.lon != location.lon });
-                    this.locations = r.data;
-                    this.locStore.updateLocations(r.data);
+                    this.setNotification(true, 'Location successfully removed.')
                 })
                 .catch(e => {
-                    console.log(e);
+                    this.setNotification(true, "Location can't be removed.")
                 })
         }
-    },
-    mounted () {
-        this.axios.get('/location/all')
-            .then(r => {
-                this.locations = r.data;
-            })
-            .catch(e => {
-                console.log(e)
-            })
     }
 }
 </script>

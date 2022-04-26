@@ -1,12 +1,5 @@
 <template>
-    <v-navigation-drawer 
-        v-model="show" 
-        app
-        height="100%"
-        :width="width"
-        color="rgba(61, 61, 61, 0.2)"
-        v-on:open-navdrawer="show = true"
-    >
+    <v-navigation-drawer v-model="show" app height="100%" :width="width" color="rgba(61, 61, 61, 0.2)" v-on:open-navdrawer="show = true">
         <v-list-item>
             <v-list-item-content>
                 <v-list-item-title class="white--text text--darken-3" style="font-family: Zelda-Bold;">
@@ -21,7 +14,7 @@
             </v-btn>
         </v-list-item>
         <v-list>
-            <WeatherWidget v-for="(location, index) in locations" :key="location.id" v-bind:location="location" v-bind:weather="weathers[index]"></WeatherWidget>
+            <WeatherWidget v-for="item in array" :key="item.id" v-bind:location="item.location" v-bind:weather="item.weather"></WeatherWidget>
         </v-list>
     </v-navigation-drawer>
 </template>
@@ -38,7 +31,7 @@ export default {
     setup() {
         const global = useGlobal();
         const locations = useLocations();
-        return {global: global, locStore: locations }
+        return {global: global, setNotification: global.setNotification, locStore: locations }
     },
     computed: {
         width () {
@@ -60,40 +53,44 @@ export default {
         },
         weathers () {
             return this.locStore.weathers;
+        },
+        settings () {
+            return this.global.settings;
         }
     },
-    async mounted () {
-        var isEnabledSort = await this.axios.get('/settings')
-            .then(r => {
-                return r.data.general.sidebar.sorting.enabled;
-            });
-
-        console.log(isEnabledSort);
-
-        if (isEnabledSort) {
-            this.axios.get('/location/average-temperature/sort', {data: {locations: null, interval: null}})
-                .then(r => {
-                    r.data.forEach(item => {
-                        this.locStore.addLocation(item.location);
-                        this.locStore.addWeather(item.weather);
-                    })
-                })
-                .catch(e => {
-                    console.log(e);
-                })
-        } else {
-            this.axios.get('/location/weather/all')
-                .then(r => {
-                    r.data.forEach(item => {
-                        this.locStore.addLocation(item.location);
-                        this.locStore.addWeather(item.weather);
-                    })
-                })
-                .catch(e => {
-                    console.log(e);
-                })
+    watch: {
+        async weathers () {
+            this.update();
+        },
+        async settings () {
+            this.update();
         }
-
+    },
+    data () {
+        return {
+            array: []
+        }
+    },
+    methods: {
+        async update () {
+            this.array = [];
+            try {
+                var data = {
+                    locations: this.locStore.locations,
+                    weathers: this.locStore.weathers
+                }
+                if (this.settings.general.sidebar.sorting.enabled)  {
+                    var response = await this.axios.post('/location/average-temperature/sort', data, {params: {id: 1}});
+                    this.array = response.data;
+                } else {
+                    for (var i = 0; i < this.weathers.length; i++) {
+                        this.array.push({location: this.locations[i], weather: this.weathers[i]});
+                    }
+                }
+            } catch (err) {
+                this.setNotification(true, "Can't fetch new data after changing settings.")
+            }
+        }
     }
 }
 </script>
