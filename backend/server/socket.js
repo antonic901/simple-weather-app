@@ -1,8 +1,9 @@
 'use strict';
 
 module.exports = function (server) {
-    var io = require('socket.io')(server, {cors: {origins: ['http://localhost:8080']}});
-    var service = require('./service')
+    let io = require('socket.io')(server, {cors: {origins: ['http://localhost:8080']}});
+    // let io = require('socket.io')(server);
+    let service = require('./service')
 
     const notify = service.notify;
 
@@ -16,9 +17,19 @@ module.exports = function (server) {
 
     });
 
-    notify.on('settings-updated', (sortingEnabled) => {
+    notify.on('settings-updated', (settings) => {
         console.log("Settings updated.");
-        io.emit('settings-updated', sortingEnabled)
+        io.emit('settings-updated', settings)
+    });
+
+    notify.on('location-added', (location) => {
+        console.log("Location with ID: " + location.id + " is added.");
+        io.emit('location-added', location)
+    });
+
+    notify.on('location-removed', (id) => {
+        console.log("Location with ID: " + id + " is removed.");
+        io.emit('location-removed', id)
     });
 
     notify.on('refresh-data', (sortingEnabled) => {

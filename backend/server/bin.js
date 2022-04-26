@@ -1,18 +1,18 @@
 'use-strict'
 
-var process = require('process'),
+let process = require('process'),
     network = require('./utils/network');
 
 process.title = 'simple-weather-api';
 
-var host = process.env.HOST || network.getHostAddress();
-var port = process.env.PORT || 9006;
+let host = process.env.HOST || network.getHostAddress();
+let port = process.env.PORT || 9007;
 
-var http = require('http'),
+let http = require('http'),
     socket = require('./socket'),
     api = require('./');
 
-var server = http.createServer(api);
+let server = http.createServer(api);
 socket(server);
 
 server.listen(port, host).on('error', function (e) {

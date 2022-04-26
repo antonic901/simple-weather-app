@@ -1,13 +1,13 @@
 'use strict';
 
-var express = require('express'),
+let express = require('express'),
     bodyParser = require('body-parser'),
     morgan = require('morgan'),
-    axios = require('axios'),
+    restcountries = require('./providers/restcountries'),
     openweather = require('./providers/openweather'),
     service = require('./service');
     
-var api = express();
+let api = express();
 
 api.use(bodyParser.json());
 api.use(morgan('dev'));
@@ -20,86 +20,48 @@ api.use(function (req, res, next) {
 api.use(express.static('public'));
 
 api.get('/search/country', function (req, res) {
-    axios.get("https://restcountries.com/v3.1/name/" + req.query.query)
-        .then(r => {
-            res.send(r.data);
-        })
-        .catch(e => {
-            res.statusCode = e.response.status;
-            res.send(e.response.data);
-        })
+    restcountries.search(req.query.query).then(r => {res.statusCode = r.status,res.send(r.body)})
 });
 
 api.get('/search/location', function (req, res) {
-    var query = req.query.query + "," + req.query.country;
-
-    axios.get("http://api.openweathermap.org/geo/1.0/direct", {params: {q: query, limit: 10, appid: '375986c161d754e8e0b204fbd4d79440'}})
-        .then(r => {
-            if (r.data == []) {
-                res.sendStatus(404);
-            } else {
-                res.send(r.data);
-            }
-        })
-        .catch(e => {
-            res.statusCode(e.response.status);
-            res.send(e.response.data);
-        })
+    openweather.search(req.query.query + "," + req.query.country).then(r => {res.statusCode = r.status, res.send(r.body)})
 });
 
 api.post('/location/add', function (req, res) {
-    res.send(service.addLocation(req.body));
+    res.send(service.addLocation(req.body, req.query.id));
 });
 
 api.delete('/location/remove', function (req, res) {
-    res.send(service.removeLocation(req.query.id));
+    res.send(service.removeLocation(req.query.id, req.query.locationid));
 });
 
 api.get('/location/all', function (req, res) {
-    res.send(service.allLocation());
-});
-
-api.get('/location/average-temperature', async function (req, res) {
-    var response = await service.getAverageTemp(req.body.locations, req.body.interval);
-    res.send(response);
-});
-
-api.get('/location/average-temperature/sort', async function (req, res) {
-    var response = await service.getAverageTemp(req.body.locations, req.body.interval);
-    res.send(service.sortByAverageTemp(response));
+    res.send(service.allLocation(req.query.id));
 });
 
 api.get('/location/weather', function (req, res) {
-    openweather.oneCall(req.query.lat, req.query.lon)
-        .then(r => {
-            res.statusCode = r.status;
-            res.send(r.body);
-        })
-}) ;
-
-api.get('/weather', async function (req, res) {
-    openweather.oneCall(req.query.lat, req.query.lon)
-        .then(r => {
-            res.statusCode = r.status;
-            res.send(r.body);
-        })
+    openweather.oneCall(req.query.lat, req.query.lon).then(r => {res.statusCode = r.status, res.send(r.body)})
 });
 
 api.get('/location/weather/all', function (req, res) {
-    service.getWeathersForUser().then(response => {res.send(response)});
-}) ;
+    service.getWeathersForUser(req.query.id).then(response => {res.send(response)});
+});
+
+api.get('/location/average-temperature', async function (req, res) {
+    res.send(service.getAverageTemp(req.body.locations, req.body.weathers, req.body.interval, req.query.id));
+});
+
+api.post('/location/average-temperature/sort', async function (req, res) {
+    let response = await service.getAverageTemp(req.body.locations, req.body.weathers, req.body.interval, req.query.id);
+    res.send(service.sortByAverageTemp(response, req.query.id));
+});
 
 api.get('/settings', function (req, res) {
-    res.send(service.getSettings());
+    res.send(service.getSettings(req.query.id));
 });
 
 api.put('/settings', function (req, res) {
-    res.send(service.updateSettings(req.body.settings));
+    res.send(service.updateSettings(req.body.settings, req.query.id));
 });
-
-api.get('/test', function (req, res) {
-    service.test();
-    res.send("ok");
-})
 
 module.exports = api;

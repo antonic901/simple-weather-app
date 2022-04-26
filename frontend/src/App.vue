@@ -17,6 +17,7 @@
 
     </div>
     <SettingsModal v-bind:value="showSettings" v-on:close-settings="(value) => {showSettings = value}"></SettingsModal>
+    <BasicNotification v-bind:showNotification="notification.show" v-bind:text="notification.message" v-on:close="global.setNotification(false, '')"></BasicNotification>
   </v-app>
 </template>
 
@@ -25,6 +26,7 @@ import SocketioService from './services/socketio.service.js';
 
 import NavigationDrawer from './components/NavigationDrawer/NavigationDrawer.vue';
 import SettingsModal from './components/Modals/Settings/SettingsModal.vue';
+import BasicNotification from './components/Notifications/BasicNotification.vue';
 
 import colorBetween from 'color-between';
 import { useWeather } from './store/weather';
@@ -32,7 +34,7 @@ import { useGlobal } from './store/global';
 import { useLocations } from './store/locations';
 
 export default {
-    components: { NavigationDrawer, SettingsModal },
+    components: { NavigationDrawer, SettingsModal, BasicNotification },
     name: 'App',
     setup() {
         const store = useWeather();
@@ -41,7 +43,9 @@ export default {
         return {
             weather: store,
             global: global,
-            locStore: locStore
+            locStore: locStore,
+            notification: global.notification,
+            setNotification: global.setNotification
         }
     },
     computed: {
@@ -104,69 +108,50 @@ export default {
     created () {
         SocketioService.setupSocketConnection();
 
-        SocketioService.socket.on('refresh-data', (sortEnabled) => {
-            if (this.weather.weather) {
-                console.log('Refreshing data on home page...');
-                this.axios.get("/weather", {params: {lat:  this.weather.weather.lat, lon: this.weather.weather.lon}})
-                    .then(r => {
-                        this.weather.update(r.data);
-                    })
-                    .catch(e => {
-                        console.log(e);
-                    })
-            }
-            console.log(sortEnabled);
-            if (sortEnabled) {
-                this.axios.get('/location/average-temperature/sort', {data: {locations: null, interval: null}})
-                    .then(r => {
-                        r.data.forEach(item => {
-                            this.locStore.addLocation(item.location);
-                            this.locStore.addWeather(item.weather);
-                        })
-                    })
-                    .catch(e => {
-                        console.log(e);
-                    })
-            } else {
-                this.axios.get('/location/weather/all')
-                    .then(r => {
-                        r.data.forEach(item => {
-                            this.locStore.addLocation(item.location);
-                            this.locStore.addWeather(item.weather);
-                        })
-                    })
-                    .catch(e => {
-                        console.log(e);
-                    })
-            }
-        });
+        SocketioService.socket.on('settings-updated', (settings) => {
+            // console.log('Settings are updated...');
+            this.global.setSettings(settings);
+        })
 
-        SocketioService.socket.on('settings-updated', (sortEnabled) => {
-            if (sortEnabled) {
-                this.axios.get('/location/average-temperature/sort', {data: {locations: null, interval: null}})
-                    .then(r => {
-                        r.data.forEach(item => {
-                            this.locStore.addLocation(item.location);
-                            this.locStore.addWeather(item.weather);
-                        })
-                    })
-                    .catch(e => {
-                        console.log(e);
-                    })
-            } else {
-                this.axios.get('/location/weather/all')
-                    .then(r => {
-                        r.data.forEach(item => {
-                            this.locStore.addLocation(item.location);
-                            this.locStore.addWeather(item.weather);
-                        })
-                    })
-                    .catch(e => {
-                        console.log(e);
-                    })
-            }
-        });
+        SocketioService.socket.on('location-added', (location) => {
+            // console.log('Adding location with ID: ' + location.id + ' in store...')
+            this.locStore.addLocation(location);
+        })
 
+        SocketioService.socket.on('location-removed', (id) => {
+            // console.log('Removing location with ID: ' + id + ' in store...')
+            this.locStore.removeLocation(id);
+        })
+
+        SocketioService.socket.on('refresh-data', () => {
+            // console.log(isSortEnabled);
+            // TODO
+            console.log('I need to fetch fresh data from OpenWeather...');
+        })
+
+    },
+    mounted () {
+        this.axios.get('/settings', {params: {id: 1}})
+            .then(r => {
+                this.global.setSettings(r.data)
+            })
+            .catch(e => {
+                console.log(e);
+            })
+        this.axios.get('/location/all', {params: {id: 1}})
+            .then(r => {
+                this.locStore.updateLocations(r.data)
+            })
+            .catch(e => {
+                console.log(e);
+            })
+        this.axios.get('/location/weather/all', {params: {id: 1}})
+            .then(r => {
+                this.locStore.updateWeathers(r.data)
+            })
+            .catch(e => {
+                console.log(e);
+            })
     },
     beforeUnmount () {
         SocketioService.disconnect();

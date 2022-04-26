@@ -32,11 +32,17 @@
 </template>
 
 <script>
+import { useGlobal } from '../../../store/global';
+
 export default {
     // eslint-disable-next-line vue/multi-word-component-names
     name: 'Location',
     props: {
         country: Object
+    },
+    setup() {
+        const global = useGlobal();
+        return {setNotification: global.setNotification}
     },
     data() {
         return {
@@ -64,10 +70,11 @@ export default {
                 };
                 self.axios.get("/search/location",{params: params})
                     .then(r => {
+                        if (r.data.length == 0) self.setNotification(true, 'No results found for input: ' + val);
                         self.locations = r.data;
                     })
                     .catch(e => {
-                        console.log(e);
+                        this.setNotification(true, 'API returned an error.')
                     })
                     .finally(() => {
                         self.isLoading = false;

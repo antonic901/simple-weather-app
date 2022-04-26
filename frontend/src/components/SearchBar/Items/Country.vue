@@ -32,9 +32,15 @@
 </template>
 
 <script>
+import { useGlobal } from '../../../store/global';
+
 export default {
     // eslint-disable-next-line vue/multi-word-component-names
     name: 'Country',
+    setup() {
+        const global = useGlobal();
+        return {setNotification: global.setNotification}
+    },
     data() {
         return {
             isLoading: false,
@@ -63,7 +69,7 @@ export default {
                             self.countries = r.data;
                         })
                         .catch(e => {
-                            console.log(e);
+                            self.setNotification(true, 'No results found for input: ' + val);
                         })
                         .finally(() => {
                             self.isLoading = false;
