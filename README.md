@@ -1,6 +1,7 @@
 ## Simple Weather
-![Home](https://i.postimg.cc/hPqXyny3/Screenshot-from-2022-04-18-11-07-56.png)
-![Search result](https://i.postimg.cc/Qd8HDbrQ/Screenshot-from-2022-04-18-11-08-25.png)
+![Home](https://i.postimg.cc/pdNYsXBJ/Screenshot-from-2022-04-26-15-36-04.png)
+![Search result](https://i.postimg.cc/rwRNGt5p/Screenshot-from-2022-04-26-15-34-03.png)
+![Sidebar](https://i.postimg.cc/4sdbprfh/Screenshot-from-2022-04-26-15-37-52.png)
 ## Table of Contents
 - [Info](#info)
 - [Requirements](#requirements)
