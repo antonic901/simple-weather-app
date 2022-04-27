@@ -126,7 +126,23 @@ export default {
         SocketioService.socket.on('refresh-data', () => {
             // console.log(isSortEnabled);
             // TODO
-            console.log('I need to fetch fresh data from OpenWeather...');
+            this.setNotification(true, 'Fetching new data...');
+             this.axios.get('/location/weather/all', {params: {id: 1}})
+                .then(r => {
+                    this.locStore.updateWeathers(r.data)
+                })
+                .catch(e => {
+                    console.log(e);
+                })
+            if (this.weather.weather) {
+                this.axios.get("/location/weather", {params: {lat: this.weather.weather.lat, lon: this.weather.weather.lon}})
+                    .then(r => {
+                        this.weather.update(r.data);
+                    })
+                    .catch(e => {
+                        this.setNotification(true, "Can't fetch weather data.")
+                    })
+                }
         })
 
     },
