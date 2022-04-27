@@ -12,7 +12,7 @@
 - [Running](#running)
 - [Some images](#some-images)
 ## Info
- - This is project that offers nice and simple UI for fetching weather data from all around the world using OpenWeather API. Currently, only english inputs are supported, multilanguage support maybe come in near future.
+ - This is project that offers nice and simple UI for fetching weather data from all around the world using OpenWeather API. Some advanced features includes Sidebar, similar to one that you can find on macOS with widgets that represents weather info for one location. You can sort widgets by average temperature, and you can add as many as you want locations. Currently, only english inputs are supported, multilanguage support maybe come in near future.
 
 ## Requirements
 + [Node.js](https://nodejs.org/en/download/)
