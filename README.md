@@ -2,6 +2,7 @@
 ![Home](https://i.postimg.cc/pdNYsXBJ/Screenshot-from-2022-04-26-15-36-04.png)
 ![Search result](https://i.postimg.cc/rwRNGt5p/Screenshot-from-2022-04-26-15-34-03.png)
 ![Sidebar](https://i.postimg.cc/4sdbprfh/Screenshot-from-2022-04-26-15-37-52.png)
+![MoreInfo](https://i.postimg.cc/2509qmVW/Screenshot-from-2022-04-27-02-59-04.png)
 ## Table of Contents
 - [Info](#info)
 - [Requirements](#requirements)
