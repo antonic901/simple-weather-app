@@ -3,6 +3,8 @@
 ![Search result](https://i.postimg.cc/rwRNGt5p/Screenshot-from-2022-04-26-15-34-03.png)
 ![Sidebar](https://i.postimg.cc/4sdbprfh/Screenshot-from-2022-04-26-15-37-52.png)
 ![MoreInfo](https://i.postimg.cc/2509qmVW/Screenshot-from-2022-04-27-02-59-04.png)
+## Video
+[![Watch the video](https://i.postimg.cc/CMJ1XVjn/Screenshot-from-2022-04-27-12-48-53.png)](https://www.youtube.com/watch?v=G5tKl_UHtmA)
 ## Table of Contents
 - [Info](#info)
 - [Requirements](#requirements)
