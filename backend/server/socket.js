@@ -1,8 +1,8 @@
 'use strict';
 
 module.exports = function (server) {
-    let io = require('socket.io')(server, {cors: {origins: ['http://localhost:8080']}});
-    // let io = require('socket.io')(server);
+    // let io = require('socket.io')(server, {cors: {origins: ['http://localhost:8080']}});
+    let io = require('socket.io')(server);
     let service = require('./service')
 
     const notify = service.notify;
