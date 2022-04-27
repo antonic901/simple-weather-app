@@ -1,1 +1,1 @@
-{"openweather":{"all":{"minute":{"start":1650948475379,"counter":3,"limit":60},"month":{"start":1650669755348,"counter":265,"limit":1000000}},"onecall":{"day":{"start":1650883086782,"counter":84,"limit":1000},"month":{"start":1650669755348,"counter":265,"limit":30000}}}}
+{"openweather":{"all":{"minute":{"start":1651018840225,"counter":4,"limit":60},"month":{"start":1650669755348,"counter":438,"limit":1000000}},"onecall":{"day":{"start":1650977839757,"counter":173,"limit":1000},"month":{"start":1650669755348,"counter":438,"limit":30000}}}}

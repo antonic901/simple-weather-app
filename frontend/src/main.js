@@ -15,7 +15,7 @@ Vue.config.productionTip = false;
 
 Vue.use(VueAxios, axios);
 
-// axios.defaults.baseURL = process.env.VUE_APP_BACKEND_ENDPOINT;
+axios.defaults.baseURL = process.env.VUE_APP_BACKEND_ENDPOINT;
 
 new Vue({
   vuetify,

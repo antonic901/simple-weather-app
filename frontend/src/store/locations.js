@@ -13,6 +13,16 @@ export const useLocations = defineStore('locations', {
         },
         getWeather: (state) => {
             return (location) => _.find(state.weathers, function(w) { return location.lat == w.lat && location.lon == w.lon })
+        },
+        getById: (state) => {
+            return (id) => {
+                for (let i = 0; i < state.locations.length; i++) {
+                    if (state.locations[i].id == id) {
+                        return {location: state.locations[i], weather: state.weathers[i]}
+                    }
+                }
+                return null;
+            }
         }
     },
     actions: {

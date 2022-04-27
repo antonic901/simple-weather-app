@@ -67,13 +67,7 @@
                             offset-y
                         >
                             <template v-slot:activator="{ on, attrs }">
-                                <v-btn
-                                    color="grey"
-                                    dark
-                                    v-bind="attrs"
-                                    v-on="on"
-                                    icon
-                                >
+                                <v-btn color="grey" dark v-bind="attrs" v-on="on" icon>
                                     <v-icon color="grey" medium>mdi-arrow-down-bold</v-icon>
                                 </v-btn>
                             </template>
