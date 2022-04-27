@@ -15,13 +15,13 @@
                     <div class="blue-grey--text text--darken-3 font-weight-medium" style="font-family: Zelda-Bold;">{{weather.current.weather[0].main}}</div>
                     <div class="d-flex">
                         <div class="d-flex justify-center white--text font-weight-black mr-2" style="max-width:600px;">
-                            <p class="my-0 py-0 white--text font-weight-black text-body-2" style="font-family: Zelda-Bold;">H : 10</p>
+                            <p class="my-0 py-0 white--text font-weight-black text-body-2" style="font-family: Zelda-Bold;">H : {{weather.current.temp.toFixed()}}</p>
                             <div>
                                 <v-icon class="mb-2" small dense color="white">mdi-temperature-celsius</v-icon>
                             </div>
                         </div>
                         <div class="d-flex justify-center white--text font-weight-black" style="max-width:600px;">
-                            <p class="my-0 py-0 white--text font-weight-black text-body-2" style="font-family: Zelda-Bold;">L : 10</p>
+                            <p class="my-0 py-0 white--text font-weight-black text-body-2" style="font-family: Zelda-Bold;">L : {{weather.current.temp.toFixed() - 6}}</p>
                             <div>
                                 <v-icon class="mb-2" small dense color="white">mdi-temperature-celsius</v-icon>
                             </div>

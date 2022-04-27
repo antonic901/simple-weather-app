@@ -29,22 +29,22 @@ function findUser (id) {
 }
 
 async function getWeathersForUser(id) {
-    // let user = findUser(id);
+    let user = findUser(id);
 
-    // const locations = user.settings.locations;
-    // const locPayload = [];
+    const locations = user.settings.locations;
+    const locPayload = [];
 
-    // for (let i = 0; i < locations.length; i++) {
-    //     let response = await openweather.oneCall(locations[i].lat, locations[i].lon);
-    //     if (response.success) {
-    //         locPayload.push(response.body);
-    //     } else {
-    //         console.log("API OpenWeather returned error. Status: " + response.body);
-    //     }
-    // }
+    for (let i = 0; i < locations.length; i++) {
+        let response = await openweather.oneCall(locations[i].lat, locations[i].lon);
+        if (response.success) {
+            locPayload.push(response.body);
+        } else {
+            console.log("API OpenWeather returned error. Status: " + response.body);
+        }
+    }
 
-    // return locPayload;
-    return JSON.parse(file.read('./', 'data.json'));
+    return locPayload;
+    // return JSON.parse(file.read('./', 'data.json'));
 }
 
 function getAverageTemp (locations, weathers, interval, id) {
