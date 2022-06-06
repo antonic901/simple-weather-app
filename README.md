@@ -1,8 +1,8 @@
 ## Simple Weather
-![Home](https://i.postimg.cc/pdNYsXBJ/Screenshot-from-2022-04-26-15-36-04.png)
-![Search result](https://i.postimg.cc/rwRNGt5p/Screenshot-from-2022-04-26-15-34-03.png)
-![Sidebar](https://i.postimg.cc/4sdbprfh/Screenshot-from-2022-04-26-15-37-52.png)
-![MoreInfo](https://i.postimg.cc/2509qmVW/Screenshot-from-2022-04-27-02-59-04.png)
+![Home](https://github.com/antonic901/simple-weather-app/blob/master/images/1.png?raw=true)
+![Search result](https://github.com/antonic901/simple-weather-app/blob/master/images/2.png?raw=true)
+![Sidebar](https://github.com/antonic901/simple-weather-app/blob/master/images/3.png?raw=true)
+![MoreInfo](https://github.com/antonic901/simple-weather-app/blob/master/images/4.png?raw=true)
 ## Video
 [![Watch the video](https://i.postimg.cc/CMJ1XVjn/Screenshot-from-2022-04-27-12-48-53.png)](https://www.youtube.com/watch?v=G5tKl_UHtmA)
 ## Table of Contents
@@ -10,7 +10,6 @@
 - [Requirements](#requirements)
 - [Setup Guide](#setup-guide)
 - [Running](#running)
-- [Some images](#some-images)
 ## Info
  - This is project that offers nice and simple UI for fetching weather data from all around the world using OpenWeather API. Some advanced features includes Sidebar, similar to one that you can find on macOS with widgets that represents weather info for one location. You can sort widgets by average temperature, and you can add as many as you want locations. Currently, only english inputs are supported, multilanguage support maybe come in near future.
 
