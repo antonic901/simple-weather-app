@@ -32,8 +32,8 @@
 ## Running
  - Clone this repo
  - Open new terminal window in backend folder and type:
-  ```bash
-  npm install
-  npm start
-  ```
+   ```bash
+   npm install
+   npm start
+   ```
  - In your browser go to Local IP Address on which app is running
