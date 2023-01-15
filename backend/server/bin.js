@@ -1,7 +1,10 @@
 'use-strict'
 
 let process = require('process'),
-    network = require('./utils/network');
+    network = require('./utils/network'),
+    dotenv = require("dotenv");
+
+dotenv.config();
 
 process.title = 'simple-weather-api';
 
